@@ -11,7 +11,7 @@ class Program
         
         try
         {
-            var workbook = new Workbook("file_example_XLSX_5000.xlsx");
+            Workbook workbook = new Workbook("file_example_XLSX_5000.xlsx");
             workbook.Save("output.xml");
             
             
@@ -19,7 +19,7 @@ class Program
             List<ExcelRow> data = reader.ReadExcelXml("output.xml");
 
             Console.WriteLine($"Read {data.Count} rows:");
-            foreach (var row in data)
+            foreach (ExcelRow row in data)
             {
                 Console.WriteLine($"Row #{row.RowNumber}:");
                 Console.WriteLine($"Valid: {row.IsValid}");
@@ -37,8 +37,8 @@ class Program
                 Console.WriteLine("-------------------");
             }
 
-            var validRows = data.Count(r => r.IsValid);
-            var invalidRows = data.Count(r => !r.IsValid);
+            int validRows = data.Count(r => r.IsValid);
+            int invalidRows = data.Count(r => !r.IsValid);
             Console.WriteLine($"\nStatistics:");
             Console.WriteLine($"Valid rows: {validRows}");
             Console.WriteLine($"Invalid rows: {invalidRows}");

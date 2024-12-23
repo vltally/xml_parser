@@ -12,16 +12,16 @@ public class ExcelReader
     
     private Dictionary<int, string> ExtractCellValues(XmlNode rowNode, XmlNamespaceManager nsmngr)
     {
-        var cellValues = new Dictionary<int, string>();
-        var currentCellIndex = 1;
+        Dictionary<int, string> cellValues = new Dictionary<int, string>();
+        int currentCellIndex = 1;
     
-        var cellNodes = rowNode.SelectNodes(".//def:Cell", nsmngr);
+        XmlNodeList? cellNodes = rowNode.SelectNodes(".//def:Cell", nsmngr);
         if (cellNodes == null) return cellValues;
     
         foreach (XmlNode cellNode in cellNodes)
         {
             currentCellIndex = GetCellIndex(cellNode, currentCellIndex);
-            var value = ExtractCellValue(cellNode, nsmngr);
+            string? value = ExtractCellValue(cellNode, nsmngr);
             
             if (value != null)
             {
@@ -36,13 +36,13 @@ public class ExcelReader
     
     private int GetCellIndex(XmlNode cellNode, int currentIndex)
     {
-        var indexAttr = cellNode.Attributes?["ss:Index"];
+        XmlAttribute? indexAttr = cellNode.Attributes?["ss:Index"];
         return indexAttr != null ? int.Parse(indexAttr.Value) : currentIndex;
     }
 
     private string? ExtractCellValue(XmlNode cellNode, XmlNamespaceManager nsmngr)
     {
-        var dataNode = cellNode.SelectSingleNode(".//def:Data", nsmngr);
+        XmlNode? dataNode = cellNode.SelectSingleNode(".//def:Data", nsmngr);
         return dataNode?.InnerText;
     }
     
@@ -56,7 +56,7 @@ public class ExcelReader
             {"def", "urn:schemas-microsoft-com:office:spreadsheet"}
         };
 
-        foreach (var ns in namespaces)
+        foreach (KeyValuePair<string, string> ns in namespaces)
         {
             nsmgr.AddNamespace(ns.Key, ns.Value);
         }
@@ -64,7 +64,7 @@ public class ExcelReader
     
     private void ValidateRow(ExcelRow row, List<string> validationMessages)
     {
-        var requiredFields = new Dictionary<string, string?>
+        Dictionary<string, string?> requiredFields = new Dictionary<string, string?>
         {
             {"First name", row.FirstName},
             {"Last name", row.LastName},
@@ -73,7 +73,7 @@ public class ExcelReader
             {"Age", row.Age.ToString()}
         };
 
-        foreach (var field in requiredFields)
+        foreach (KeyValuePair<string, string?> field in requiredFields)
         {
             if (string.IsNullOrEmpty(field.Value))
             {
@@ -114,9 +114,9 @@ public class ExcelReader
     {
         row.RowNumber = currentRowIndex - 1;
 
-        foreach (var cell in cellValues)
+        foreach (KeyValuePair<int, string> cell in cellValues)
         {
-            if (_cellProcessors.TryGetValue(cell.Key, out var processor))
+            if (_cellProcessors.TryGetValue(cell.Key, out Func<string, ExcelRow, bool>? processor))
             {
                 if (!processor(cell.Value, row))
                 {

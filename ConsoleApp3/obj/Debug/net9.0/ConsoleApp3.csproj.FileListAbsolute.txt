@@ -30,3 +30,4 @@ C:\Users\User\Desktop\ConsoleApp3\ConsoleApp3\bin\Debug\net9.0\ExcelNumberFormat
 C:\Users\User\Desktop\ConsoleApp3\ConsoleApp3\bin\Debug\net9.0\RBush.dll
 C:\Users\User\Desktop\ConsoleApp3\ConsoleApp3\bin\Debug\net9.0\SixLabors.Fonts.dll
 C:\Users\User\Desktop\ConsoleApp3\ConsoleApp3\bin\Debug\net9.0\System.IO.Packaging.dll
+C:\Users\User\Desktop\ConsoleApp3\ConsoleApp3\obj\Debug\net9.0\ConsoleApp3.sourcelink.json
