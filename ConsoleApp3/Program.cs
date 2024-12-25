@@ -9,58 +9,95 @@ class Program
     public static void Main()
     {
         
+        // try
+        // {
+        //     Workbook workbook = new Workbook("file_example_XLSX_5000.xlsx");
+        //     workbook.Save("output.xml");
+        //     
+        //     
+        //     ExcelReader reader = new ExcelReader();
+        //     List<ExcelRow> data = reader.ReadExcelXml("output.xml");
+        //
+        //     Console.WriteLine($"Read {data.Count} rows:");
+        //     foreach (ExcelRow row in data)
+        //     {
+        //         Console.WriteLine($"Row #{row.RowNumber}:");
+        //         Console.WriteLine($"Valid: {row.IsValid}");
+        //         if (!row.IsValid)
+        //         {
+        //             Console.WriteLine($"Validation issues: {row.ValidationMessage}");
+        //         }
+        //         Console.WriteLine($"First Name: {row.FirstName ?? "not specified"}");
+        //         Console.WriteLine($"Last Name: {row.LastName ?? "not specified"}");
+        //         Console.WriteLine($"Gender: {row.Gender ?? "not specified"}");
+        //         Console.WriteLine($"Country: {row.Country ?? "not specified"}");
+        //         Console.WriteLine($"Age: {row.Age?.ToString() ?? "not specified"}");
+        //         Console.WriteLine($"Date: {row.Date ?? "not specified"}");
+        //         Console.WriteLine($"ID: {row.Id?.ToString() ?? "not specified"}");
+        //         Console.WriteLine("-------------------");
+        //     }
+        //
+        //     int validRows = data.Count(r => r.IsValid);
+        //     int invalidRows = data.Count(r => !r.IsValid);
+        //     Console.WriteLine($"\nStatistics:");
+        //     Console.WriteLine($"Valid rows: {validRows}");
+        //     Console.WriteLine($"Invalid rows: {invalidRows}");
+        //     
+        //     Console.WriteLine("-------------------");
+        //     
+        //     List<ExcelRow> invalidRowsList = data.Where(row => !row.IsValid).ToList();
+        //     invalidRowsList.ForEach(row =>
+        //     {
+        //         Console.WriteLine($"Row #{row.RowNumber}:");
+        //         Console.WriteLine($"Valid: {row.IsValid}");
+        //            Console.WriteLine($"Validation issues: {row.ValidationMessage}");
+        //         Console.WriteLine($"First Name: {row.FirstName ?? "not specified"}");
+        //         Console.WriteLine($"Last Name: {row.LastName ?? "not specified"}");
+        //         Console.WriteLine($"Gender: {row.Gender ?? "not specified"}");
+        //         Console.WriteLine($"Country: {row.Country ?? "not specified"}");
+        //         Console.WriteLine($"Age: {row.Age?.ToString() ?? "not specified"}");
+        //         Console.WriteLine($"Date: {row.Date ?? "not specified"}");
+        //         Console.WriteLine($"ID: {row.Id?.ToString() ?? "not specified"}");
+        //         Console.WriteLine("-------------------");
+        //     });
+        //     
+        // }
+        // catch (Exception ex)
+        // {
+        //     Console.WriteLine($"An error occurred: {ex.Message}");
+        // }
+        
         try
         {
-            Workbook workbook = new Workbook("file_example_XLSX_5000.xlsx");
+            // Convert Excel to XML
+            var workbook = new Workbook("file_example_XLSX_5000.xlsx");
             workbook.Save("output.xml");
             
-            
-            ExcelReader reader = new ExcelReader();
-            List<ExcelRow> data = reader.ReadExcelXml("output.xml");
+            // Read and process the XML
+            var xmlManagerCreator = new XmlManagerCreator();
+            var reader = new ExcelReader(xmlManagerCreator);
+            var sheet = reader.ReadExcelXml("output.xml");
 
-            Console.WriteLine($"Read {data.Count} rows:");
-            foreach (ExcelRow row in data)
+            // Print statistics
+            Console.WriteLine($"Total rows: {sheet.Rows.Count}");
+            Console.WriteLine($"Valid rows: {sheet.Rows.Count(r => r.IsValid)}");
+            Console.WriteLine($"Invalid rows: {sheet.Rows.Count(r => !r.IsValid)}");
+            Console.WriteLine("-------------------");
+
+            // Print detailed information
+            foreach (var row in sheet.Rows)
             {
                 Console.WriteLine($"Row #{row.RowNumber}:");
                 Console.WriteLine($"Valid: {row.IsValid}");
-                if (!row.IsValid)
+                
+                foreach (var (column, cell) in row.Cells)
                 {
-                    Console.WriteLine($"Validation issues: {row.ValidationMessage}");
+                    string value = cell.GetDisplayValue();
+                    
+                    Console.WriteLine($"Column {column}: {value} (Valid: {cell.IsValid})");
                 }
-                Console.WriteLine($"First Name: {row.FirstName ?? "not specified"}");
-                Console.WriteLine($"Last Name: {row.LastName ?? "not specified"}");
-                Console.WriteLine($"Gender: {row.Gender ?? "not specified"}");
-                Console.WriteLine($"Country: {row.Country ?? "not specified"}");
-                Console.WriteLine($"Age: {row.Age?.ToString() ?? "not specified"}");
-                Console.WriteLine($"Date: {row.Date ?? "not specified"}");
-                Console.WriteLine($"ID: {row.Id?.ToString() ?? "not specified"}");
                 Console.WriteLine("-------------------");
             }
-
-            int validRows = data.Count(r => r.IsValid);
-            int invalidRows = data.Count(r => !r.IsValid);
-            Console.WriteLine($"\nStatistics:");
-            Console.WriteLine($"Valid rows: {validRows}");
-            Console.WriteLine($"Invalid rows: {invalidRows}");
-            
-            Console.WriteLine("-------------------");
-            
-            List<ExcelRow> invalidRowsList = data.Where(row => !row.IsValid).ToList();
-            invalidRowsList.ForEach(row =>
-            {
-                Console.WriteLine($"Row #{row.RowNumber}:");
-                Console.WriteLine($"Valid: {row.IsValid}");
-                   Console.WriteLine($"Validation issues: {row.ValidationMessage}");
-                Console.WriteLine($"First Name: {row.FirstName ?? "not specified"}");
-                Console.WriteLine($"Last Name: {row.LastName ?? "not specified"}");
-                Console.WriteLine($"Gender: {row.Gender ?? "not specified"}");
-                Console.WriteLine($"Country: {row.Country ?? "not specified"}");
-                Console.WriteLine($"Age: {row.Age?.ToString() ?? "not specified"}");
-                Console.WriteLine($"Date: {row.Date ?? "not specified"}");
-                Console.WriteLine($"ID: {row.Id?.ToString() ?? "not specified"}");
-                Console.WriteLine("-------------------");
-            });
-            
         }
         catch (Exception ex)
         {
