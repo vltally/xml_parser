@@ -1,4 +1,4 @@
-﻿namespace ConsoleApp3.ExcelReader;
+﻿namespace ConsoleApp3.Rows;
 
 public class ExcelRow
 {
