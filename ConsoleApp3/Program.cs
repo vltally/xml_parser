@@ -89,6 +89,10 @@ class Program
             {
                 Console.WriteLine($"Row #{row.RowNumber}:");
                 Console.WriteLine($"Valid: {row.IsValid}");
+                if (!row.IsValid)
+                {
+                    Console.WriteLine($"Validation: {row.ValidationMessage}");
+                }
                 
                 foreach (var (column, cell) in row.Cells)
                 {

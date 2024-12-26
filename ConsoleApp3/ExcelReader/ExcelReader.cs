@@ -207,13 +207,13 @@ public class ExcelReader
 
     private Row ProcessRow(XmlNode rowNode, XmlNamespaceManager nsmgr, int rowIndex)
     {
-        var row = new Row { RowNumber = rowIndex - 1 };
-        var cellValues = ExtractCellValues(rowNode, nsmgr);
+        Row row = new() { RowNumber = rowIndex - 1 };
+        Dictionary<int, string> cellValues = ExtractCellValues(rowNode, nsmgr);
 
-        foreach (var (columnIndex, value) in cellValues)
+        for (int i = 1; i <= 8; i++)
         {
-            ICell cell = CreateCell(columnIndex, value);
-            row.Cells[columnIndex] = cell;
+            ICell cell = CreateCell(i, cellValues.GetValueOrDefault(i, string.Empty));
+            row.AddCell(i, cell);
         }
 
         return row;
@@ -247,7 +247,7 @@ public class ExcelReader
     private ICell CreateCell(int columnIndex, string value)
     {
         // Assuming columns 6 and 8 are numeric (Age and Id from original code)
-        if (columnIndex is 6 or 8)
+        if (columnIndex is 1 or 6 or 8)
         {
             var cell = new NumberCell();
             cell.IsValid = int.TryParse(value, out int numValue);
@@ -258,7 +258,7 @@ public class ExcelReader
             return cell;
         }
         
-        var stringCell = new StringCell
+        StringCell stringCell = new()
         {
             Value = value,
             IsValid = !string.IsNullOrEmpty(value)
@@ -268,13 +268,15 @@ public class ExcelReader
 
     private int GetCellIndex(XmlNode cellNode, int currentIndex)
     {
-        var indexAttr = cellNode.Attributes?["ss:Index"];
+        XmlAttribute? indexAttr = cellNode.Attributes?["ss:Index"];
         return indexAttr != null ? int.Parse(indexAttr.Value) : currentIndex;
     }
 
     private string? ExtractCellValue(XmlNode cellNode, XmlNamespaceManager nsmgr)
     {
-        var dataNode = cellNode.SelectSingleNode(".//def:Data", nsmgr);
+        XmlNode? dataNode = cellNode.SelectSingleNode(".//def:Data", nsmgr);
         return dataNode?.InnerText;
     }
+    
+    
 }
