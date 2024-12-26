@@ -105,6 +105,41 @@ public class Sheet
         return Rows.Where(row => row.IsValid == true).ToList();
     }
     
+   
+   public List<Row> SearchByAnyMatch(string searchTerm)
+   {
+       
+       if (string.IsNullOrEmpty(searchTerm))
+       {
+           return new List<Row>();
+       }
+
+       
+       var searchTerms = searchTerm.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+
+       return Rows.Where(row =>
+       {
+           
+           return searchTerms.All(term =>
+           {
+               return row.Cells.Any(cell =>
+               {
+                   if (cell is StringCell stringCell)
+                   {
+                       return stringCell.Value.Contains(term, StringComparison.OrdinalIgnoreCase);
+                   }
+
+                   if (cell is NumberCell numberCell)
+                   {
+                       return numberCell.Value.ToString().Contains(term);
+                   }
+
+                   return false;
+               });
+           });
+       }).ToList();
+   }
+    
     public void PrintDisplay()
     {
         foreach (var row in Rows)
@@ -117,6 +152,16 @@ public class Sheet
         Console.WriteLine($"Valid rows: {Rows.Count(r => r.IsValid)}");
         Console.WriteLine($"Invalid rows: {Rows.Count(r => !r.IsValid)}");
         Console.WriteLine("-------------------");
+    }
+    
+    public void PrintDisplay(List<Row> rows)
+    {
+        foreach (var row in rows)
+        {
+            Console.WriteLine($"Row #{row.RowNumber}: {row.GetDisplay()}");
+            Console.WriteLine("----------------------------------------------------------------");
+        }
+      
     }
     
     
